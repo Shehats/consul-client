@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -27,19 +28,19 @@ const (
 )
 
 // ReadServerConfigFromYaml reads yml form uri or local
-func ReadServerConfigFromYaml(path string) ([]Service, error) {
-	fmt.Println(path)
+func ReadServerConfigFromYaml(yamlPath string) ([]Service, error) {
+	log.Println(fmt.Sprintf("Loading config path: %v", yamlPath))
 	var serviceDef ServiceDef
 	var bodyBytes []byte
 	var readErr error
-	if isURL, err := regexp.MatchString(`https?:\/\/.*`, path); err != nil && isURL {
-		resp, err := http.Get(path)
+	if isURL, err := regexp.MatchString(`https?:\/\/.*`, yamlPath); err != nil && isURL {
+		resp, err := http.Get(yamlPath)
 		if err != nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			defer resp.Body.Close()
 			bodyBytes, readErr = ioutil.ReadAll(resp.Body)
 		}
 	} else {
-		bodyBytes, readErr = ioutil.ReadFile(path)
+		bodyBytes, readErr = ioutil.ReadFile(yamlPath)
 	}
 
 	if readErr == nil {
