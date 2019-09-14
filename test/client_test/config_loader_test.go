@@ -21,7 +21,13 @@ func TestReadServerConfigFromYaml(t *testing.T) {
 		panic(err)
 	}
 	srvs, errs := client.ReadServerConfigFromYaml(test_resource)
-	// assert.NoError(errs)
+
+	assert.Nil(t, errs, "An error has occured %v", errs)
+	assert.NotNil(t, srvs, "Servers assertion failed")
+	assert.Len(t, srvs, 2, "Number of servers isn't accurate %v", len(srvs))
+
+	// Check from URI
+	srvs, errs = client.ReadServerConfigFromYaml("https://raw.githubusercontent.com/Shehats/consul-client/master/test/resources/test_server.yml")
 	assert.Nil(t, errs, "An error has occured %v", errs)
 	assert.NotNil(t, srvs, "Servers assertion failed")
 	assert.Len(t, srvs, 2, "Number of servers isn't accurate %v", len(srvs))

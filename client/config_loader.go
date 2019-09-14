@@ -33,9 +33,10 @@ func ReadServerConfigFromYaml(yamlPath string) ([]Service, error) {
 	var serviceDef ServiceDef
 	var bodyBytes []byte
 	var readErr error
-	if isURL, err := regexp.MatchString(`https?:\/\/.*`, yamlPath); err != nil && isURL {
+	if isURL, err := regexp.MatchString(`https?:\/\/.*`, yamlPath); err == nil && isURL {
 		resp, err := http.Get(yamlPath)
-		if err != nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		log.Println(resp)
+		if err == nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			defer resp.Body.Close()
 			bodyBytes, readErr = ioutil.ReadAll(resp.Body)
 		}
