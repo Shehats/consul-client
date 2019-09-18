@@ -1,8 +1,12 @@
 test-server:
   port: 9090
-  url: localhost
+  url: 127.0.0.1
   tag: kafka-tag
+  contextPath: /api/v1
+  healthCheck: /health
 ninja-server:
   port: 9080
-  url: localhost
+  url: 127.0.0.1
   tag: kafka-tag
+  contextPath: /api/v1
+  healthCheck: /health

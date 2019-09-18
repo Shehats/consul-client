@@ -15,16 +15,20 @@ type ServiceDef map[string]map[string]interface{}
 
 // Service is placeholder for the grpc service
 type Service struct {
-	Name string
-	Port int
-	Tag  string
-	URL  string
+	Name        string
+	Port        int
+	Tag         string
+	URL         string
+	ContextPath string
+	HealthCheck string
 }
 
 const (
-	port = "port"
-	url  = "url"
-	tag  = "tag"
+	port        = "port"
+	url         = "url"
+	tag         = "tag"
+	contextPath = "contextPath"
+	healthCheck = "healthCheck"
 )
 
 // ReadServerConfigFromYaml reads yml form uri or local
@@ -58,12 +62,27 @@ func ReadServerConfigFromYaml(yamlPath string) ([]Service, error) {
 		if value, exists := details[port]; exists {
 			srv.Port = value.(int)
 		}
+
 		if value, exists := details[tag]; exists {
 			srv.Tag = value.(string)
 		}
-		if value, exists := details[name]; exists {
+
+		if value, exists := details[url]; exists {
 			srv.URL = value.(string)
 		}
+
+		if value, exists := details[contextPath]; exists {
+			srv.ContextPath = value.(string)
+		}
+
+		if value, exists := details[healthCheck]; exists {
+			srv.HealthCheck = value.(string)
+		}
+
+		if srv.ContextPath != "" && srv.HealthCheck != "" {
+			srv.HealthCheck = fmt.Sprintf("%s%s", srv.ContextPath, srv.HealthCheck)
+		}
+
 		lis = append(lis, *srv)
 	}
 	return lis, nil

@@ -23,10 +23,23 @@ type client struct {
 // Register a service with consul agent
 func (c *client) Register(service Service) error {
 	registry := &api.AgentServiceRegistration{
-		ID:   service.Name,
-		Name: service.Name,
-		Port: service.Port,
+		ID:      service.Name,
+		Name:    service.Name,
+		Port:    service.Port,
+		Tags:    []string{service.Tag},
+		Address: service.URL,
+		Check: &api.AgentServiceCheck{
+			HTTP:     fmt.Sprintf("%s:%d%s", service.URL, service.Port, service.HealthCheck),
+			Interval: "10s",
+			Timeout:  "15s",
+		},
+		Weights: &api.AgentWeights{
+			Passing: 10,
+			Warning: 1,
+		},
 	}
+	fmt.Println(registry)
+	fmt.Println(registry.Check)
 	return c.consul.Agent().ServiceRegister(registry)
 }
 
@@ -63,4 +76,9 @@ func (c *client) CreateService(service Service, passingOnly bool, queryOptions *
 		return nil, nil, err
 	}
 	return addrs, meta, nil
+}
+
+// CreateConsulSubscriber NOOP
+func CreateConsulSubscriber(configPath string) {
+
 }
